@@ -1,14 +1,20 @@
 class State:
-    def __init__(self, targetRs, dependency):
+    def __init__(self, num, targetRs, stat = []):
+        self.number = num
 
         # rules to check / interested in (underlined ones in example)
+        # list of Rule
         self.targetRules = targetRs
 
         # compute closure of target and then add
-        self.closureExtras = dependency
+        # list of Rule
+        # self.closureExtras = dependency
+
+
         # add next character its checking for transition diagram later?
         # keep track of previous or next state?
-
+        # list of State
+        self.states = stat
 
 class Rule:
     def __init__(self, num, nonterminal, dependency):
@@ -57,9 +63,44 @@ def closure(targetNT, rules, nonterminals):
     # option 2 use stack to avoid duplicates
 
 
+def checkItems(items, rhs):
+    for state in items:
+        for rule in state.targetRules:
+            if rule.rhs == rhs:
+                return True
+    return False
+
+
+# Items : State
+# X : terminal or nonterminal
+def goto(Items, X):
+    J = []
+
+    for rule in Items:
+        pos = rule.rhs.find("." + X)
+        if pos != -1:
+            temp = rule.rhs.remove(".")
+
+
+
+
+
+
 
 def generate_items(rules, nonterminals, terminals):
     augmentedRule = rules[0]
 
-    if augmentedRule[0] in nonterminals:
-        closure(augmentedRule[0], rules, nonterminals)
+    items = []
+    # double check augmented rule
+    stateCounter = 0
+    if augmentedRule.lhs.find("'") != -1:
+        items.append(State(stateCounter, closure(augmentedRule.rhs, rules, nonterminals)))
+
+        print("hello world")
+
+    else:
+        print("augmented grammar start issue")
+
+    return items
+
+    # goto for each unique char both terminals and nonterminals

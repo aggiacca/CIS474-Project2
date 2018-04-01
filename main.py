@@ -1,4 +1,6 @@
 from LL_parser import Rule, generate_items
+from FF import FIRST
+from copy import deepcopy
 
 def print_list(list):
     for item in list:
@@ -11,6 +13,9 @@ def fileInputFiltering(str):
 
 if __name__ == "__main__":
     file = open("example-input", "r")
+
+    # first nonterminal should be part of augmented so E and E' -> E
+    # option: remove from input and create augmented grammar
     nonterminals = fileInputFiltering(file.readline()).split(",")
     terminals = fileInputFiltering(file.readline()).split(",")
 
@@ -26,13 +31,27 @@ if __name__ == "__main__":
         inputRule = file.readline()
         ruleCount += 1
 
+    # need deepcopy as individual rules keep their original references even if new list
+    nonaugRules = deepcopy(rules)
+    nonaugRules.pop(0)
+
     for rule in rules:
         rule.print_rule()
 
     print_list(nonterminals)
     print_list(terminals)
 
-    items = generate_items(rules, nonterminals, terminals)
+    # pass in shallow copy of rules
+    items = generate_items(rules[:], nonterminals, terminals)
+    print("Set of Items: ")
+    for item in items:
+        print("Set {0}".format(item.number))
+        for rule in item.targetRules:
+            rule.print_rule()
+
+
+    firstChars = FIRST(nonaugRules, 'E', nonterminals, terminals)
+    print_list(firstChars)
 
 
 
