@@ -35,13 +35,14 @@ def addDotToStart(rule):
 
 # rules = original grammar and list of Rule
 def closure(targetNT, rules, nonterminals):
-    # first take any rules where targetChar is on the left hand side
-    #   then add dot to beginning of rhs
 
     # to avoid modifying rules outside of scope
     tempRules = deepcopy(rules)
+    # first take any rules where targetChar is on the left hand side
+    #   then add dot to beginning of rhs
     finalClosure = [addDotToStart(i) for i in tempRules if i.lhs is targetNT]
 
+    # consider adding start symbol case here
 
     queue = []
 
@@ -142,7 +143,7 @@ def checkIfStateExists(states, targetState):
 
 
 def generate_items(rules, nonterminals, terminals):
-    augmentedRule = rules[0]
+    augmentedRule = deepcopy(rules[0])
 
     allSymbols = nonterminals + terminals
 
@@ -153,8 +154,12 @@ def generate_items(rules, nonterminals, terminals):
     # double check augmented rule
     stateCounter = 0
     if augmentedRule.lhs.find("'") != -1:
-        # TODO: first augmented rule is not being added into first state
+
         initialState = State(stateCounter, closure(augmentedRule.rhs, rules, nonterminals))
+
+        # add start symbol rule as current closure function does not cover it
+        initialState.targetRules.insert(0, addDotToStart(augmentedRule))
+
         items.append(initialState)
         queue.append(initialState)
         stateCounter += 1
@@ -174,4 +179,21 @@ def generate_items(rules, nonterminals, terminals):
 
     return items
 
-    # goto for each unique char both terminals and nonterminals
+
+def generate_transition_diagram(items, follow_table, rules, nonterminals, terminals):
+    
+
+# items = list of States
+def generate_parsing_table(items, follow_table, rules, nonterminals, terminals):
+
+
+    print("s ")
+    for i in range(len(terminals)):
+        if i == len(terminals) / 2:
+            print
+
+    for state in items:
+        for rule in state.targetRules:
+
+
+    # rerder by state
