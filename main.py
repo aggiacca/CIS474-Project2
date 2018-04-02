@@ -1,5 +1,5 @@
 from LL_parser import Rule, generate_items
-from FF import FIRST
+from FF import FIRST, generate_follow_table
 from copy import deepcopy
 
 def print_list(list):
@@ -52,6 +52,11 @@ if __name__ == "__main__":
 
     firstChars = FIRST(nonaugRules, 'E', nonterminals, terminals)
     print_list(firstChars)
+
+    generate_follow_table(rules, nonterminals, terminals)
+
+
+
 
 
 

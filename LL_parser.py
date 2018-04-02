@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 class State:
     def __init__(self, num, targetRs, stat = []):
         self.number = num
@@ -31,6 +33,7 @@ def addDotToStart(rule):
     return rule
 
 
+# rules = original grammar and list of Rule
 def closure(targetNT, rules, nonterminals):
     # first take any rules where targetChar is on the left hand side
     #   then add dot to beginning of rhs
@@ -71,18 +74,36 @@ def checkItems(items, rhs):
     return False
 
 
-# Items : State
-# X : terminal or nonterminal
-def goto(Items, X):
+# curState : State
+# X : terminal or nonterminal char
+def goto(curState, originalRules, X, nonterminals, terminals):
     J = []
 
-    for rule in Items:
+    closuresAdded = []
+    for rule in curState.targetRules:
         pos = rule.rhs.find("." + X)
         if pos != -1:
-            temp = rule.rhs.remove(".")
+            # 1 for start a 0 and 1 for checking if X is last in list
+            if pos+2 == len(rule.rhs):
+                # .X is last so just move over and add. no closure
+                temp = rule.rhs.remove(".")
+                temp.append(".")
+                rule.rhs = temp
+                J.append(rule)
+            else:
+                # grab char in front of dot after wouldbe move
+                nextChar = rule.rhs[pos+2:pos+3]
 
-
-
+                # move dot over
+                temp = rule.rhs[:pos] + rule.rhs[pos+1:pos+2] + "." + rule.rhs[pos+2:]
+                rule.rhs = temp
+                J.append(rule)
+                if nextChar in nonterminals and nextChar not in closuresAdded:
+                    tempList = deepcopy(closure(nextChar, originalRules, nonterminals))
+                    J.append(tempList)
+                    closuresAdded.append(nextChar)
+    # TODO: consider returning a object that seprates the closure rules and rules that had the dot moved over
+    return J
 
 
 
@@ -95,6 +116,8 @@ def generate_items(rules, nonterminals, terminals):
     stateCounter = 0
     if augmentedRule.lhs.find("'") != -1:
         items.append(State(stateCounter, closure(augmentedRule.rhs, rules, nonterminals)))
+        stateCounter += 1
+        
 
         print("hello world")
 

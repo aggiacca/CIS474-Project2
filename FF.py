@@ -1,6 +1,9 @@
+from copy import deepcopy
+
+
 # Preconditions
-# rules = initial nonaugmented grammar and list of Rule
-# each rule only contains one option and no Epsilon
+# rules = initial nonaugmented grammar and type: list of Rule
+# each rule only contains one option ( no | ) and no Epsilon
 def FIRST(rules, target, nonterminals, terminals):
     initialRules = [i for i in rules if i.lhs is target]
 
@@ -28,22 +31,56 @@ def FIRST(rules, target, nonterminals, terminals):
 
     return firstChars
 
-
-def FOLLOW(rules, target):
+# Preconditions
+# rules = initial nonaugmented grammar and type: list of Rule
+# each rule only contains one option ( no | ) and no Epsilon
+def FOLLOW(rules, target, nonterminals, terminals, start):
     followChars = []
 
     for rule in rules:
         pos = rule.rhs.find(target)
         if pos != -1:
             if rule.rhs.endswith(rule.rhs[pos]):
-                # last charater
+                # last charater so follow of lhs
+                followChars = deepcopy(FOLLOW(rules, rule.lhs, nonterminals, terminals, start))
+            elif rule.rhs[pos+1] in nonterminals:
+                # nonterminal in front so take first of that
+                followChars = deepcopy(FIRST(rules, rule.rhs[pos+1], nonterminals, terminals))
+            elif rule.rhs[pos+1] in terminals:
+                # terminal so add to follow
+                followChars.append(rule.rhs[pos+1])
             else:
-                # not last so grab next character
+                print("error in follow")
+
+    if target is start:
+        followChars.append('$')
+
+    return followChars
 
 
+def generate_follow_table(rules, nonterminals, terminals):
+    # plus one for $ symbol
+    startTerminals = deepcopy(terminals)
+    startTerminals.append('$')
+    follow_table = [['- ' for x in range(len(startTerminals))] for y in range(len(nonterminals))]
 
-    print("hello")
+    follow = []
+    for nt in nonterminals:
+        follow.append(FOLLOW(rules, nt, nonterminals, terminals, nonterminals[0]))
 
 
-def generate_follow_table():
-    print("hello")
+    print("FOLLOW table: ")
+    print(' ', end='')
+    for term in startTerminals:
+        print("{0} ".format(term), end='')
+
+    print("\n")
+
+    for y_index, y in enumerate(follow_table):
+        print("{0} ".format(nonterminals[y_index]), end='')
+        for x_index, x in enumerate(y):
+            if startTerminals[x_index] in follow[y_index]:
+                x = 'X '
+            print(x, end='')
+        print("\n")
+
