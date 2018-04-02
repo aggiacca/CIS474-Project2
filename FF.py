@@ -84,3 +84,4 @@ def generate_follow_table(rules, nonterminals, terminals):
             print(x, end='')
         print("\n")
 
+    return follow

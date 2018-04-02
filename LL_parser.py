@@ -8,7 +8,7 @@ class State:
         # list of Rule
         self.targetRules = targetRs
 
-        # compute closure of target and then add
+        # closure of target rules
         # list of Rule
         # self.closureExtras = dependency
 
@@ -25,7 +25,7 @@ class Rule:
         self.rhs = dependency
 
     def print_rule(self):
-        print("Order {0}, Left-hand side: {1}, Right-hand-side: {2}".format(self.order, self.lhs, self.rhs))
+        print("Original Rule Number: {0}, Left-hand side: {1}, Right-hand-side: {2}".format(self.order, self.lhs, self.rhs))
 
 
 def addDotToStart(rule):
@@ -108,7 +108,7 @@ def goto(curState, originalRules, X, nonterminals, terminals):
                     tempList = deepcopy(closure(nextChar, originalRules, nonterminals))
                     J.extend(tempList)
                     closuresAdded.append(nextChar)
-    # TODO: consider returning a object that seprates the closure rules and rules that had the dot moved over
+    # TODO: consider returnigtng a object that seprates the closure rules and rules that had the dot moved over
     return J
 
 
@@ -144,11 +144,8 @@ def checkIfStateExists(states, targetState):
 
 def generate_items(rules, nonterminals, terminals):
     augmentedRule = deepcopy(rules[0])
-
     allSymbols = nonterminals + terminals
-
     items = []
-
     queue = []
 
     # double check augmented rule
@@ -181,19 +178,44 @@ def generate_items(rules, nonterminals, terminals):
 
 
 def generate_transition_diagram(items, follow_table, rules, nonterminals, terminals):
-    
+
+    # TODO: each char in the extra closure of a goto goes to the same state across all goto's
+    # algo to find the state for nonspecial closure
+    #   start at base state and check the goto links that match target char.
+    # for special goto/target goto's. modify goto/set of items to build links between
+
+    print("To    |", end='')
+    for i in range(len(items)-1):
+        print("{0} ".format(i), end='')
+
+    print("\n-------------", end='')
+    for i in range(len(items)-1):
+        print("--", end='')
+
+    # Decide whether this function shouldgenerate transition diagram to modify tables
+    #   or if closure and goto should be updated
+
+
+
+
 
 # items = list of States
 def generate_parsing_table(items, follow_table, rules, nonterminals, terminals):
 
-
-    print("s ")
+    # print table header
+    print("s ", end='')
     for i in range(len(terminals)):
         if i == len(terminals) / 2:
-            print
+            print('actions', end='')
+            i += len('actions')
+        else:
+            print(' ')
+    print('|', end='')
+    print('Goto')
 
-    for state in items:
-        for rule in state.targetRules:
 
 
-    # rerder by state
+
+    # for state in items:
+    #     for rule in state.targetRules
+    #

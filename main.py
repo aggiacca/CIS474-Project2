@@ -1,4 +1,4 @@
-from LL_parser import Rule, generate_items
+from LL_parser import Rule, generate_items, generate_transition_diagram, generate_parsing_table
 from FF import FIRST, generate_follow_table
 from copy import deepcopy
 
@@ -35,25 +35,25 @@ if __name__ == "__main__":
     nonaugRules = deepcopy(rules)
     nonaugRules.pop(0)
 
-    for rule in rules:
-        rule.print_rule()
 
-    print_list(nonterminals)
-    print_list(terminals)
 
     # pass in shallow copy of rules
     items = generate_items(rules, nonterminals, terminals)
     print("Set of Items: ")
     for item in items:
-        print("Set {0}".format(item.number))
+        print("Set #: {0}".format(item.number))
         for rule in item.targetRules:
             rule.print_rule()
 
+    follow_table = generate_follow_table(rules, nonterminals, terminals)
 
-    firstChars = FIRST(nonaugRules, 'E', nonterminals, terminals)
-    print_list(firstChars)
+    generate_transition_diagram(items, follow_table, rules, nonterminals, terminals)
 
-    generate_follow_table(rules, nonterminals, terminals)
+    print(" ")
+
+    # generate_parsing_table(items, follow_table, rules, nonterminals, terminals)
+
+
 
 
 
