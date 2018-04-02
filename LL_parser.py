@@ -37,7 +37,10 @@ def addDotToStart(rule):
 def closure(targetNT, rules, nonterminals):
     # first take any rules where targetChar is on the left hand side
     #   then add dot to beginning of rhs
-    finalClosure = [addDotToStart(i) for i in rules if i.lhs is targetNT]
+
+    # to avoid modifying rules outside of scope
+    tempRules = deepcopy(rules)
+    finalClosure = [addDotToStart(i) for i in tempRules if i.lhs is targetNT]
 
 
     queue = []
@@ -52,7 +55,7 @@ def closure(targetNT, rules, nonterminals):
     while not len(queue) == 0:
         target = queue.pop()
         # consider removing rules already checked in case of possible edge cases
-        subClosure = [addDotToStart(i) for i in rules if i.lhs is target]
+        subClosure = [addDotToStart(i) for i in tempRules if i.lhs is target]
         for rule in subClosure:
             dotPos = rule.rhs.find(".")
             nextChar = rule.rhs[dotPos + 1]
@@ -100,8 +103,9 @@ def goto(curState, originalRules, X, nonterminals, terminals):
                 # can't just do rule.rhs = temp as it will update original since its just reference
                 J.append(Rule(rule.order, rule.lhs, temp))
                 if nextChar in nonterminals and nextChar not in closuresAdded:
+                    # copy of orginal rules since closure modifies original rules
                     tempList = deepcopy(closure(nextChar, originalRules, nonterminals))
-                    J.append(tempList)
+                    J.extend(tempList)
                     closuresAdded.append(nextChar)
     # TODO: consider returning a object that seprates the closure rules and rules that had the dot moved over
     return J
@@ -143,6 +147,7 @@ def generate_items(rules, nonterminals, terminals):
         queue.append(initialState)
         stateCounter += 1
 
+        # TODO: infinite loop currently
         while not len(queue) == 0:
             curState = queue.pop()
 
