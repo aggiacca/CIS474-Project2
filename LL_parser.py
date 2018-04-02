@@ -115,7 +115,11 @@ def compareStateRules(state1, state2):
     if len(state1.targetRules) != len(state2.targetRules):
         return False
 
-    for rule in state1.targetRules:
+    isEqual = True
+    # TODO: fix this to continue. It wasn't actually checking the rhs of each so it always passed and caused infinite loop above
+    for rule1 in state1.targetRules:
+        for rule2 in state2.targetRules:
+            if rule1.rhs == rule2.rhs
         if rule not in state2.targetRules:
             return False
 
@@ -149,11 +153,12 @@ def generate_items(rules, nonterminals, terminals):
 
         # TODO: infinite loop currently
         while not len(queue) == 0:
-            curState = queue.pop()
+            # remove first
+            curState = queue.pop(0)
 
             for symbol in allSymbols:
                 newState = State(stateCounter, goto(curState, rules, symbol, nonterminals, terminals))
-                if newState is not None and not checkIfStateExists(items, newState):
+                if newState is not None and len(newState.targetRules) != 0 and not checkIfStateExists(items, newState):
                     items.append(newState)
                     queue.append(newState)
                     stateCounter += 1
