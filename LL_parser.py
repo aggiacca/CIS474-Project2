@@ -90,7 +90,7 @@ def goto(curState, originalRules, X, nonterminals, terminals):
             # 1 for start a 0 and 1 for checking if X is last in list
             if pos+2 >= len(rule.rhs):
                 # .X is last so just move over and add. no closure
-                temp = rule.rhs[1:] + "."
+                temp = rule.rhs[:pos] + rule.rhs[pos+1:] + "."
 
                 # can't just do rule.rhs = temp as it will update original since its just reference
                 J.append(Rule(rule.order, rule.lhs, temp))
@@ -111,19 +111,27 @@ def goto(curState, originalRules, X, nonterminals, terminals):
     return J
 
 
+
+# checks if a state's rules's rhs are the exact same
 def compareStateRules(state1, state2):
     if len(state1.targetRules) != len(state2.targetRules):
         return False
 
-    isEqual = True
-    # TODO: fix this to continue. It wasn't actually checking the rhs of each so it always passed and caused infinite loop above
+    isEqual = False
+    # not sure we can gaurentee order is same so more elaborate check
     for rule1 in state1.targetRules:
         for rule2 in state2.targetRules:
-            if rule1.rhs == rule2.rhs
-        if rule not in state2.targetRules:
-            return False
+            if rule1.rhs == rule2.rhs:
+                isEqual = True
+                # found match so stop checking the rest/avoid setting to false again is hit is middle
+                break
 
-    return True
+        # no matches for rule1 in state2's rules so return False
+        if not isEqual:
+            return isEqual
+
+    # all match. so return true
+    return isEqual
 
 # goes through states and checks if state already exists
 def checkIfStateExists(states, targetState):
@@ -151,7 +159,6 @@ def generate_items(rules, nonterminals, terminals):
         queue.append(initialState)
         stateCounter += 1
 
-        # TODO: infinite loop currently
         while not len(queue) == 0:
             # remove first
             curState = queue.pop(0)
