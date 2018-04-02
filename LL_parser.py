@@ -39,6 +39,7 @@ def closure(targetNT, rules, nonterminals):
     #   then add dot to beginning of rhs
     finalClosure = [addDotToStart(i) for i in rules if i.lhs is targetNT]
 
+
     queue = []
 
     for rule in finalClosure:
@@ -84,20 +85,20 @@ def goto(curState, originalRules, X, nonterminals, terminals):
         pos = rule.rhs.find("." + X)
         if pos != -1:
             # 1 for start a 0 and 1 for checking if X is last in list
-            if pos+2 == len(rule.rhs):
+            if pos+2 >= len(rule.rhs):
                 # .X is last so just move over and add. no closure
-                temp = rule.rhs.remove(".")
-                temp.append(".")
-                rule.rhs = temp
-                J.append(rule)
+                temp = rule.rhs[1:] + "."
+
+                # can't just do rule.rhs = temp as it will update original since its just reference
+                J.append(Rule(rule.order, rule.lhs, temp))
             else:
                 # grab char in front of dot after wouldbe move
                 nextChar = rule.rhs[pos+2:pos+3]
 
                 # move dot over
                 temp = rule.rhs[:pos] + rule.rhs[pos+1:pos+2] + "." + rule.rhs[pos+2:]
-                rule.rhs = temp
-                J.append(rule)
+                # can't just do rule.rhs = temp as it will update original since its just reference
+                J.append(Rule(rule.order, rule.lhs, temp))
                 if nextChar in nonterminals and nextChar not in closuresAdded:
                     tempList = deepcopy(closure(nextChar, originalRules, nonterminals))
                     J.append(tempList)
@@ -106,21 +107,51 @@ def goto(curState, originalRules, X, nonterminals, terminals):
     return J
 
 
+def compareStateRules(state1, state2):
+    if len(state1.targetRules) != len(state2.targetRules):
+        return False
+
+    for rule in state1.targetRules:
+        if rule not in state2.targetRules:
+            return False
+
+    return True
+
+# goes through states and checks if state already exists
+def checkIfStateExists(states, targetState):
+    for state in states:
+        if compareStateRules(state, targetState):
+            return True
+    return False
 
 
 def generate_items(rules, nonterminals, terminals):
     augmentedRule = rules[0]
 
+    allSymbols = nonterminals + terminals
+
     items = []
+
+    queue = []
+
     # double check augmented rule
     stateCounter = 0
     if augmentedRule.lhs.find("'") != -1:
-        items.append(State(stateCounter, closure(augmentedRule.rhs, rules, nonterminals)))
+        # TODO: first augmented rule is not being added into first state
+        initialState = State(stateCounter, closure(augmentedRule.rhs, rules, nonterminals))
+        items.append(initialState)
+        queue.append(initialState)
         stateCounter += 1
-        
 
-        print("hello world")
+        while not len(queue) == 0:
+            curState = queue.pop()
 
+            for symbol in allSymbols:
+                newState = State(stateCounter, goto(curState, rules, symbol, nonterminals, terminals))
+                if newState is not None and not checkIfStateExists(items, newState):
+                    items.append(newState)
+                    queue.append(newState)
+                    stateCounter += 1
     else:
         print("augmented grammar start issue")
 

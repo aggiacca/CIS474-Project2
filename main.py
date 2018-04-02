@@ -42,7 +42,7 @@ if __name__ == "__main__":
     print_list(terminals)
 
     # pass in shallow copy of rules
-    items = generate_items(rules[:], nonterminals, terminals)
+    items = generate_items(rules, nonterminals, terminals)
     print("Set of Items: ")
     for item in items:
         print("Set {0}".format(item.number))
