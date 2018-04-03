@@ -1,7 +1,7 @@
 from copy import deepcopy
 
 class State:
-    def __init__(self, num, targetRs, stat = []):
+    def __init__(self, num, targetRs,):
         self.number = num
 
         # rules to check / interested in (underlined ones in example)
@@ -15,8 +15,10 @@ class State:
 
         # add next character its checking for transition diagram later?
         # keep track of previous or next state?
-        # list of State
-        self.states = stat
+        # list of tuple (symbol: Rule) representing goto
+        self.gotoStates = []
+
+        self.transitions = {}
 
 class Rule:
     def __init__(self, num, nonterminal, dependency):
@@ -108,7 +110,7 @@ def goto(curState, originalRules, X, nonterminals, terminals):
                     tempList = deepcopy(closure(nextChar, originalRules, nonterminals))
                     J.extend(tempList)
                     closuresAdded.append(nextChar)
-    # TODO: consider returnigtng a object that seprates the closure rules and rules that had the dot moved over
+    # TODO: consider returning a object that seprates the closure rules and rules that had the dot moved over
     return J
 
 
@@ -168,6 +170,12 @@ def generate_items(rules, nonterminals, terminals):
             for symbol in allSymbols:
                 newState = State(stateCounter, goto(curState, rules, symbol, nonterminals, terminals))
                 if newState is not None and len(newState.targetRules) != 0 and not checkIfStateExists(items, newState):
+                    # queue is not a deepcopy of state compared to items.
+                    # So curState should reference same object in item meaning it should update item
+                    # Add goto linkage
+                    curState.gotoStates.append((symbol, newState))
+                    curState.transitions[symbol] = newState.number
+
                     items.append(newState)
                     queue.append(newState)
                     stateCounter += 1
@@ -177,12 +185,15 @@ def generate_items(rules, nonterminals, terminals):
     return items
 
 
+# Position condition: each item (state) should have its transition dict updated
 def generate_transition_diagram(items, follow_table, rules, nonterminals, terminals):
 
     # TODO: each char in the extra closure of a goto goes to the same state across all goto's
     # algo to find the state for nonspecial closure
     #   start at base state and check the goto links that match target char.
     # for special goto/target goto's. modify goto/set of items to build links between
+
+
 
     print("To    |", end='')
     for i in range(len(items)-1):
