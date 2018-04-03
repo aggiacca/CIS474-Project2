@@ -184,14 +184,28 @@ def generate_items(rules, nonterminals, terminals):
 
     return items
 
-
-# Position condition: each item (state) should have its transition dict updated
+# Pre-conditions:
+#   items is in state order and first state includes everything/grammar creates tiers
+# Post-condition: each item (state) should have its transition dict updated
+#
 def generate_transition_diagram(items, follow_table, rules, nonterminals, terminals):
 
     # TODO: each char in the extra closure of a goto goes to the same state across all goto's
     # algo to find the state for nonspecial closure
     #   start at base state and check the goto links that match target char.
     # for special goto/target goto's. modify goto/set of items to build links between
+
+    for state in items:
+        # skip initial state as all transitions are done
+        if state.number != 0:
+            for rule in state.targetRules:
+                print("change me")
+                # check char after dot in each rule
+                # check if that char is in transitions
+                # if no in transitions find goto state:
+                #   simple implmentation 1: of just checking the first state does not work for I11 in example
+                #   simple implementation 2: starting at state 0, look at 0's transition table and then see if match
+                #       if no match then go to state 1,2,3. hopefully grammar is setup so there are no closure repeats before all symbols have been goto'd once
 
 
 
