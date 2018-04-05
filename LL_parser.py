@@ -114,7 +114,6 @@ def goto(curState, originalRules, X, nonterminals, terminals):
     return J
 
 
-
 # checks if a state's rules's rhs are the exact same
 def compareStateRules(state1, state2):
     if len(state1.targetRules) != len(state2.targetRules):
@@ -228,28 +227,39 @@ def generate_transition_diagram(items, follow_table, rules, nonterminals, termin
 
 
     print("To    |", end='')
-    for i in range(len(items)-1):
+    for i in range(len(items)):
         print("{0} ".format(i), end='')
 
     print("\n-------------", end='')
-    for i in range(len(items)-1):
+    for i in range(len(items)):
         print("--", end='')
 
     for state in items:
-        # TODO: fix offset issue with double digit states
-        print("\n{0}     |".format(state.number), end='')
-        for i in range(len(items)-1):
+        print("\n{0}".format(state.number), end='')
+        if len(str(state.number)) == 2:
+            print("    |", end='')
+        else:
+            print("     |", end='')
+        for i in range(len(items)):
             temp = checkIfDictValueExists(state.transitions, i)
             if temp is not None:
                 print("{0} ".format(temp), end='')
             else:
-                print("  ", end='')
+                print("~ ", end='')
+            # extra space for double digits
+            if len(str(i)) == 2:
+                print(" ", end='')
 
     return items
 
 
 # items = list of States
 def generate_parsing_table(items, follow_table, rules, nonterminals, terminals):
+
+    terminals.append('$')
+
+    action_table = [['- ' for x in range(len(terminals))] for y in range(len(items))]
+    goto_table = [['- ' for x in range(len(nonterminals))] for y in range(len(items))]
 
     # print table header
     print("s ", end='')
@@ -262,9 +272,12 @@ def generate_parsing_table(items, follow_table, rules, nonterminals, terminals):
     print('|', end='')
     print('Goto')
 
+    for index, state in enumerate(items):
+        for rule in state.targetRules:
+            pos = rule.rhs.find(".")
+            # dot is at end reduce
+            if pos+1 == len(rule.rhs):
+                valueBefore = rule.rhs[pos-1]
 
 
 
-    # for state in items:
-    #     for rule in state.targetRules
-    #
