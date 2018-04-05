@@ -258,8 +258,8 @@ def generate_parsing_table(items, follow_table, rules, nonterminals, terminals):
 
     terminals.append('$')
 
-    action_table = [['- ' for x in range(len(terminals))] for y in range(len(items)+1)]
-    goto_table = [['- ' for x in range(len(nonterminals))] for y in range(len(items)+1)]
+    action_table = [['- ' for x in range(len(terminals)+1)] for y in range(len(items))]
+    goto_table = [['- ' for x in range(len(nonterminals)+1)] for y in range(len(items))]
 
     # first row contains table header. for easier index
     for index, terminal in enumerate(terminals):
@@ -282,24 +282,28 @@ def generate_parsing_table(items, follow_table, rules, nonterminals, terminals):
     print('Goto')
 
     for index, state in enumerate(items):
+        # add state number to beginning of row
+        action_table[index][0] = state.number
         for rule in state.targetRules:
             pos = rule.rhs.find(".")
             valueAfter = rule.rhs[pos+1]
             # dot is at end reduce
             if pos+1 == len(rule.rhs):
                 valueBefore = rule.rhs[pos-1]
-                if valueBefore in terminals:
-                    goto_table[index+1][goto_table[0].index(valueBefore)] = state.transitions[valueBefore]
-                    # check if accept state
-                    if valueBefore ==  rules[0].rhs + ".":
-                        action_table[index + 1][action_table[0].index('$')] = 'A'
-                elif valueBefore in nonterminals:
-                    action_table[index+1][action_table[0].index(valueBefore)] = 'r' + state.transitions[valueBefore]
-                # TODO: add Follow table
+                for char in follow_table[rule.lhs]:
+                    if char in terminals:
+                        # reduce by rule number. rule starts at 0 so add 1 for normal count
+                        action_table[index+1][action_table[0].index(char)] = 'r' + str(rule.order+1)
+
+                # check if accept state after setting reduces
+                if rule.rhs == rules[0].rhs + ".":
+                    action_table[index + 1][action_table[0].index('$')] = 'A'
+            # shift i, where i is next state after getting that terminal next from current state
             elif valueAfter in terminals:
-                action_table[index + 1][action_table[0].index(valueAfter)] = 's' + state.transitions[valueAfter]
+                action_table[index + 1][action_table[0].index(valueAfter)] = 's' + str(state.transitions[valueAfter])
+            # goto i, where i is next state after getting that nonterminal next from current state
             elif valueAfter in nonterminals:
-                goto_table[index + 1][goto_table[0].index(valueAfter)] = 's' + state.transitions[valueAfter]
+                goto_table[index + 1][goto_table[0].index(valueAfter)] = str(state.transitions[valueAfter])
 
 
 

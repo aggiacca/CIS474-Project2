@@ -53,7 +53,7 @@ if __name__ == "__main__":
 
     print(" ")
 
-    # generate_parsing_table(items, follow_table, rules, nonterminals, terminals)
+    generate_parsing_table(items, follow_table, rules, nonterminals, terminals)
 
 
 
