@@ -300,7 +300,7 @@ def generate_parsing_table(items, follow_table, rules, nonterminals, terminals):
                     action_table[index + 1][action_table[0].index('$')] = 'A'
             # shift i, where i is next state after getting that terminal next from current state
             elif valueAfter in terminals:
-                action_table[index + 1][action_table[0].index(valueAfter)] = 's' + str(state.transitions[valueAfter])
+                    action_table[index + 1][action_table[0].index(valueAfter)] = 's' + str(state.transitions[valueAfter])
             # goto i, where i is next state after getting that nonterminal next from current state
             elif valueAfter in nonterminals:
                 goto_table[index + 1][goto_table[0].index(valueAfter)] = str(state.transitions[valueAfter])
