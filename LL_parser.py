@@ -258,8 +258,17 @@ def generate_parsing_table(items, follow_table, rules, nonterminals, terminals):
 
     terminals.append('$')
 
-    action_table = [['- ' for x in range(len(terminals))] for y in range(len(items))]
-    goto_table = [['- ' for x in range(len(nonterminals))] for y in range(len(items))]
+    action_table = [['- ' for x in range(len(terminals))] for y in range(len(items)+1)]
+    goto_table = [['- ' for x in range(len(nonterminals))] for y in range(len(items)+1)]
+
+    # first row contains table header. for easier index
+    for index, terminal in enumerate(terminals):
+        action_table[0][index] = terminal
+
+    # first row contains table header. for easier index
+    for index, nonterminal in enumerate(nonterminals):
+        goto_table[0][index] = nonterminal
+
 
     # print table header
     print("s ", end='')
@@ -275,9 +284,24 @@ def generate_parsing_table(items, follow_table, rules, nonterminals, terminals):
     for index, state in enumerate(items):
         for rule in state.targetRules:
             pos = rule.rhs.find(".")
+            valueAfter = rule.rhs[pos+1]
             # dot is at end reduce
             if pos+1 == len(rule.rhs):
                 valueBefore = rule.rhs[pos-1]
+                if valueBefore in terminals:
+                    goto_table[index+1][goto_table[0].index(valueBefore)] = state.transitions[valueBefore]
+                    # check if accept state
+                    if valueBefore ==  rules[0].rhs + ".":
+                        action_table[index + 1][action_table[0].index('$')] = 'A'
+                elif valueBefore in nonterminals:
+                    action_table[index+1][action_table[0].index(valueBefore)] = 'r' + state.transitions[valueBefore]
+                # TODO: add Follow table
+            elif valueAfter in terminals:
+                action_table[index + 1][action_table[0].index(valueAfter)] = 's' + state.transitions[valueAfter]
+            elif valueAfter in nonterminals:
+                goto_table[index + 1][goto_table[0].index(valueAfter)] = 's' + state.transitions[valueAfter]
+
+
 
 
 
