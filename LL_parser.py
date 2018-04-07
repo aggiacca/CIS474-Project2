@@ -258,7 +258,7 @@ def generate_parsing_table(items, follow_table, rules, nonterminals, terminals):
 
     terminals.append('$')
 
-    action_table = [['- ' for x in range(len(terminals))] for y in range(len(items)+1)]
+    action_table = [['- ' for x in range(len(terminals)+1)] for y in range(len(items)+1)]
     goto_table = [['- ' for x in range(len(nonterminals))] for y in range(len(items)+1)]
 
     # first row contains table header. for easier index
@@ -269,19 +269,6 @@ def generate_parsing_table(items, follow_table, rules, nonterminals, terminals):
     for index, nonterminal in enumerate(nonterminals):
         goto_table[0][index] = nonterminal
 
-
-    # print table header
-    print("s ", end='')
-    print('| ', end='')
-    for i in range(len(terminals)):
-        if i == len(terminals) / 2:
-            print('actions', end='')
-            i += len('actions')
-        else:
-            print('{0} '.format(terminals[i]), end='')
-    print('| ', end='')
-    print('Goto')
-
     for index, state in enumerate(items):
         # add state number to beginning of row
         action_table[index+1][0] = state.number
@@ -289,35 +276,48 @@ def generate_parsing_table(items, follow_table, rules, nonterminals, terminals):
             pos = rule.rhs.find(".")
             # dot is at end reduce
             if pos+1 == len(rule.rhs):
-                valueBefore = rule.rhs[pos-1]
                 # check if accept state after setting reduces
                 if rule.rhs == rules[0].rhs + ".":
-                    action_table[index + 1][action_table[0].index('$')] = 'A'
+                    action_table[index + 1][action_table[0].index('$')+1] = 'A'
                 else:
                     # else statement to avoid checking follow table for X'
                     for char in follow_table[nonterminals.index(rule.lhs)]:
                         if char in terminals:
                             # reduce by rule number. rule starts at 0 so add 1 for normal count
-                            action_table[index+1][action_table[0].index(char)] = 'r' + str(rule.order+1)
-
+                            action_table[index+1][action_table[0].index(char)+1] = 'r' + str(rule.order)
 
             # shift i, where i is next state after getting that terminal next from current state
             elif rule.rhs[pos+1] in terminals:
-                    action_table[index + 1][action_table[0].index(rule.rhs[pos+1])] = 's' + str(state.transitions[rule.rhs[pos+1]])
+                    action_table[index + 1][action_table[0].index(rule.rhs[pos+1])+1] = 's' + str(state.transitions[rule.rhs[pos+1]])
             # goto i, where i is next state after getting that nonterminal next from current state
             elif rule.rhs[pos+1] in nonterminals:
                 goto_table[index + 1][goto_table[0].index(rule.rhs[pos+1])] = str(state.transitions[rule.rhs[pos+1]])
 
+    # print table header
+    print("s", end='')
+    print('|  ', end='')
+    for i in range(len(terminals)):
+        if i == len(terminals) / 2:
+            print('actions', end='')
+            i += len('actions')
+        else:
+            print('{0}   '.format(terminals[i]), end='')
+    print('| ', end='')
+    for symbol in nonterminals:
+        print('{0}  '.format(symbol), end='')
+
     # print table
     for indexX, row in enumerate(action_table):
-        print("")
         # skip first row
         if indexX != 0:
             for indexY, char in enumerate(row):
-                print("{0} ".format(char), end="")
+                if len(str(char)) >= 2:
+                    print("{0}  ".format(char), end="")
+                else:
+                    print("{0}   ".format(char), end="")
 
             # print goto table to side of action table
             for i in range(len(nonterminals)):
-                print("{0} ".format(goto_table[indexX][i]), end="")
-
+                print("{0}  ".format(goto_table[indexX][i]), end="")
+        print("\n", end='')
 

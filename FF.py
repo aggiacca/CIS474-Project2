@@ -69,7 +69,6 @@ def generate_follow_table(rules, nonterminals, terminals):
         follow.append(FOLLOW(rules, nt, nonterminals, terminals, nonterminals[0]))
 
 
-    print("FOLLOW table: ")
     print(' ', end='')
     for term in startTerminals:
         print("{0} ".format(term), end='')

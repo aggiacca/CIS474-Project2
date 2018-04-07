@@ -45,14 +45,18 @@ if __name__ == "__main__":
         for rule in item.targetRules:
             rule.print_rule()
 
+    print("--------------------------")
     print("Follow Table:")
     follow_table = generate_follow_table(rules, nonterminals, terminals)
 
+    print("--------------------------")
     print("Transition Diagram:")
     generate_transition_diagram(items, follow_table, rules, nonterminals, terminals)
 
-    print(" ")
+    print("\n\n ")
 
+    print("--------------------------")
+    print("Action/Goto Table")
     generate_parsing_table(items, follow_table, rules, nonterminals, terminals)
 
 
