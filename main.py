@@ -12,7 +12,9 @@ def fileInputFiltering(str):
 
 
 if __name__ == "__main__":
-    file = open("example-input", "r")
+
+    fileName = input("Input filename of rules: ")
+    file = open(fileName, "r")
 
     # first nonterminal should be part of augmented so E and E' -> E
     # option: remove from input and create augmented grammar
