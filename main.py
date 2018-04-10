@@ -1,6 +1,7 @@
-from LL_parser import Rule, generate_items, generate_transition_diagram, generate_parsing_table
+from LL_generator import Rule, generate_items, generate_transition_diagram, generate_parsing_table
 from FF import FIRST, generate_follow_table
 from copy import deepcopy
+from LL_parser import parse_expression
 
 def print_list(list):
     for item in list:
@@ -61,6 +62,9 @@ if __name__ == "__main__":
     print("Action/Goto Table")
     generate_parsing_table(items, follow_table, rules, nonterminals, terminals)
 
+    input_expresion = input("Enter put an expression to parse")
+
+    parse_expression(input_expresion, rules,)
 
 
 
