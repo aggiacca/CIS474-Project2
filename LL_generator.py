@@ -293,6 +293,8 @@ def generate_parsing_table(items, follow_table, rules, nonterminals, terminals):
             elif rule.rhs[pos+1] in nonterminals:
                 goto_table[index + 1][goto_table[0].index(rule.rhs[pos+1])] = str(state.transitions[rule.rhs[pos+1]])
 
+
+
     # print table header
     print("s", end='')
     print('|  ', end='')
@@ -321,3 +323,4 @@ def generate_parsing_table(items, follow_table, rules, nonterminals, terminals):
                 print("{0}  ".format(goto_table[indexX][i]), end="")
         print("\n", end='')
 
+    return action_table, goto_table

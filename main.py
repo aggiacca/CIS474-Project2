@@ -60,11 +60,11 @@ if __name__ == "__main__":
 
     print("--------------------------")
     print("Action/Goto Table")
-    generate_parsing_table(items, follow_table, rules, nonterminals, terminals)
+    tableTuple = generate_parsing_table(items, follow_table, rules, nonterminals, terminals)
 
-    input_expresion = input("Enter put an expression to parse")
+    input_expresion = input("Enter put an expression to parse (put spaces between symbols): ")
 
-    parse_expression(input_expresion, rules,)
+    parse_expression(input_expresion, rules, tableTuple[0], tableTuple[1])
 
 
 
