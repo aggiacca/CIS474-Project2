@@ -14,8 +14,8 @@ def fileInputFiltering(str):
 
 if __name__ == "__main__":
 
-    #fileName = input("Input filename of rules: ")
-    fileName = "grammar-input"
+    fileName = input("Input filename of rules: ")
+    #fileName = "grammar-input"
     file = open(fileName, "r")
 
     # first nonterminal should be part of augmented so E and E' -> E
@@ -63,8 +63,8 @@ if __name__ == "__main__":
     print("Action/Goto Table")
     tableTuple = generate_parsing_table(items, follow_table, rules, nonterminals, terminals)
 
-    #input_expression = input("Enter put an expression to parse (put spaces between symbols): ")
-    input_expression = "( i * i + i * i + i * i ) / n $"
+    input_expression = input("Enter put an expression to parse (put spaces between symbols): ")
+    #input_expression = "( i * i + i * i + i * i ) / n $"
     output_stack = parse_expression(input_expression, rules, tableTuple[0], tableTuple[1], terminals, nonterminals)
 
     print("Expression Evaluation: " + input_expression)
