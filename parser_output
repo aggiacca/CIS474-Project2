@@ -1,0 +1,38 @@
+Expression Evaluation: ( i * i + i * i + i * i ) / n $
+Stack                                              | Input                          | Action
+0 0 ( 6                                            | i*i+i*i+i*i)/n$                | shift
+0 0 ( 6 i 4                                        | *i+i*i+i*i)/n$                 | shift
+0 0 ( 6 F 3                                        | i+i*i+i*i)/n$                  | reduce by F -> i
+0 0 ( 6 T 2                                        | i+i*i+i*i)/n$                  | reduce by T -> F
+0 0 ( 6 T 2 * 9                                    | i+i*i+i*i)/n$                  | shift
+0 0 ( 6 T 2 * 9 i 4                                | +i*i+i*i)/n$                   | shift
+0 0 ( 6 T 2 * 9 F 14                               | i*i+i*i)/n$                    | reduce by F -> i
+0 0 ( 6 T 2                                        | i*i+i*i)/n$                    | reduce by T -> T*F
+0 0 ( 6 E 11                                       | i*i+i*i)/n$                    | reduce by E -> T
+0 0 ( 6 E 11 + 7                                   | i*i+i*i)/n$                    | shift
+0 0 ( 6 E 11 + 7 i 4                               | *i+i*i)/n$                     | shift
+0 0 ( 6 E 11 + 7 F 3                               | i+i*i)/n$                      | reduce by F -> i
+0 0 ( 6 E 11 + 7 T 12                              | i+i*i)/n$                      | reduce by T -> F
+0 0 ( 6 E 11 + 7 T 12 * 9                          | i+i*i)/n$                      | shift
+0 0 ( 6 E 11 + 7 T 12 * 9 i 4                      | +i*i)/n$                       | shift
+0 0 ( 6 E 11 + 7 T 12 * 9 F 14                     | i*i)/n$                        | reduce by F -> i
+0 0 ( 6 E 11 + 7 T 12                              | i*i)/n$                        | reduce by T -> T*F
+0 0 ( 6 E 11                                       | i*i)/n$                        | reduce by E -> E+T
+0 0 ( 6 E 11 + 7                                   | i*i)/n$                        | shift
+0 0 ( 6 E 11 + 7 i 4                               | *i)/n$                         | shift
+0 0 ( 6 E 11 + 7 F 3                               | i)/n$                          | reduce by F -> i
+0 0 ( 6 E 11 + 7 T 12                              | i)/n$                          | reduce by T -> F
+0 0 ( 6 E 11 + 7 T 12 * 9                          | i)/n$                          | shift
+0 0 ( 6 E 11 + 7 T 12 * 9 i 4                      | )/n$                           | shift
+0 0 ( 6 E 11 + 7 T 12 * 9 F 14                     | /n$                            | reduce by F -> i
+0 0 ( 6 E 11 + 7 T 12                              | /n$                            | reduce by T -> T*F
+0 0 ( 6 E 11                                       | /n$                            | reduce by E -> E+T
+0 0 ( 6 E 11 ) 16                                  | /n$                            | shift
+0 0 F 3                                            | n$                             | reduce by F -> (E)
+0 0 T 2                                            | n$                             | reduce by T -> F
+0 0 T 2 / 10                                       | n$                             | shift
+0 0 T 2 / 10 n 5                                   | $                              | shift
+0 0 T 2 / 10 F 15                                  |                                | reduce by F -> n
+0 0 T 2                                            |                                | reduce by T -> T/F
+0 0 E 1                                            |                                | reduce by E -> T
+0 0 E 1                                            |                                | Accept

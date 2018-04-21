@@ -1,7 +1,7 @@
 from LL_generator import Rule, generate_items, generate_transition_diagram, generate_parsing_table
 from FF import FIRST, generate_follow_table
 from copy import deepcopy
-from LL_parser import parse_expression
+from LL_parser import parse_expression, print_stack_top
 
 def print_list(list):
     for item in list:
@@ -14,7 +14,8 @@ def fileInputFiltering(str):
 
 if __name__ == "__main__":
 
-    fileName = input("Input filename of rules: ")
+    #fileName = input("Input filename of rules: ")
+    fileName = "grammar-input"
     file = open(fileName, "r")
 
     # first nonterminal should be part of augmented so E and E' -> E
@@ -62,12 +63,36 @@ if __name__ == "__main__":
     print("Action/Goto Table")
     tableTuple = generate_parsing_table(items, follow_table, rules, nonterminals, terminals)
 
-    input_expresion = input("Enter put an expression to parse (put spaces between symbols): ")
+    #input_expression = input("Enter put an expression to parse (put spaces between symbols): ")
+    input_expression = "( i * i + i * i + i * i ) / n $"
+    output_stack = parse_expression(input_expression, rules, tableTuple[0], tableTuple[1], terminals, nonterminals)
 
-    parse_expression(input_expresion, rules, tableTuple[0], tableTuple[1])
+    print("Expression Evaluation: " + input_expression)
+    print_stack_top(output_stack)
 
 
+    print("Writing to file:")
 
+    output_file = open('parser_output', 'w')
+    output_file.write("Expression Evaluation: " + input_expression  + "\n")
+    header = 'Stack'
+    header += " " * (50 - len('Stack'))
+    header += " | "
+    header += "Input"
+    header += " " * (30 - len('Input'))
+    header += " | Action\n"
+    output_file.write(header)
+
+    for stacktop in output_stack:
+        outputString = ''
+        outputString += stacktop.stack
+        outputString += " " * (50-len(stacktop.stack))
+        outputString += " | "
+        outputString += stacktop.expressionInput
+        outputString += " " * (30-len(stacktop.expressionInput))
+        outputString += " | "
+        outputString += stacktop.action + "\n"
+        output_file.write(outputString)
 
 
 
